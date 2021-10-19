@@ -1,12 +1,18 @@
 {
-  "lang": "ja",
-  "name": "PWA テスト",
-  "short_name": "pwa test",
-  "icons": [{
-        "src": "/app-icon.png",
-        "sizes": "500x500",
-        "type": "image/png"
-      }],
-  "start_url": "https://sgymsnj114.github.io/test/pwa/",
-  "display": "standalone"
+  "name": "pwa-test",
+  "short_name": "pwa-test",
+  "theme_color": "#fff",
+  "background_color": "#fff",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "app-icon.png",
+      "sizes": "500x500",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
