@@ -1,0 +1,22 @@
+{
+  "name": "pwa-test ページ1",
+  "short_name": "pwa-test ページ1",
+  "theme_color": "#fff",
+  "background_color": "#fff",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "/",
+  "start_url": "https://sgymsnj114.github.io/test/pwa/page1.html",
+  "icons": [
+    {
+      "src": "/test/pwa/favicon_180x180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/test/pwa/favicon_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
