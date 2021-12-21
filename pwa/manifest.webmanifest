@@ -3,8 +3,6 @@
   "short_name": "pwaƒeƒXƒg",
   "theme_color": "#fff",
   "background_color": "#fff",
-  "display": "standalone",
-  "orientation": "any",
   "scope": "/",
   "start_url": "https://sgymsnj114.github.io/test/pwa/",
   "icons": [
