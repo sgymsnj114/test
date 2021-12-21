@@ -1,6 +1,6 @@
 {
-  "name": "pwa-test",
-  "short_name": "pwa-test",
+  "name": "pwaテスト",
+  "short_name": "pwaテスト",
   "theme_color": "#fff",
   "background_color": "#fff",
   "display": "standalone",
