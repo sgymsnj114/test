@@ -1,10 +1,7 @@
 {
-  "name": "gwaテスト",
-  "short_name": "gwaテスト",
-  "theme_color": "#fff",
-  "background_color": "#fff",
-  "scope": "/",
-  "start_url": "https://sgymsnj114.github.io/test/pwa/",
+  "name": "gtmテスト",
+  "short_name": "gtmテスト",
+  "start_url": "https://sgymsnj114.github.io/test/gtm/",
   "icons": [
     {
       "src": "/test/gwa/favicon_180x180.png",
