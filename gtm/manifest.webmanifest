@@ -3,7 +3,7 @@
   "short_name": "gtmテスト",
   "theme_color": "#fff",
   "background_color": "#fff",
-  "display": "standalone",
+  "display": "browser",
   "start_url": "https://sgymsnj114.github.io/test/gtm/",
   "icons": [
     {
