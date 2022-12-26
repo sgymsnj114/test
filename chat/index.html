@@ -6,6 +6,18 @@
         <title>サイトタイトル</title>
     </head>
     <body>
+        <!-- <header>
+            <h1>ヘッダー</h1>
+            <nav class="gnav">
+                <ul class="menu">
+                    <li><a href="index.html">戻る</a></li>
+                    <!--<li><a href="" onclick="closeButtonClick()">閉じる</a></li>-->
+                    <!-- 
+                    <li><input type="button" value="閉じる" onclick="closeButtonClick()" class="custom_button"></li>
+                </ul>
+            </nav>
+        </header> -->
+
         <style type='text/css'>
             .embeddedServiceHelpButton .helpButton .uiButton {
                 background-color: #005290;
@@ -14,10 +26,33 @@
             .embeddedServiceHelpButton .helpButton .uiButton:focus {
                 outline: 1px solid #005290;
             }
+            /* チャット小窓のヘッダーの最小化・閉じるボタンとタイトルの非表示 */
+            /* header.sidebarHeader {
+                display: none !important;
+            } */
             /* チャット小窓のヘッダーの非表示 */
             embeddedservice-chat-header {
                 display:none;
             }
+            /* チャット小窓の表示位置設定 */
+            /* .embeddedServiceHelpButton .helpButton {
+                bottom:50%;
+                left:50%;
+                transform: translate(-50%,-50%);
+            } */
+            /* 画面メッセージの表示設定 */
+            /* .title_text {
+                text-align:center;
+                position:absolute;
+                top: 20%;
+                font-size: 150%;
+                font-size: 1.5em;
+                margin: 0;
+                top: 35%;
+                left: 50%;
+                margin-right: -50%;
+                transform: translate(-50%, -50%)
+            } */
             /* 標準のチャットボタン非表示 */
             .embeddedServiceHelpButton .helpButton .uiButton.helpButtonDisabled { 
                 display: none; 
@@ -25,6 +60,20 @@
             .embeddedServiceHelpButton .helpButton .uiButton.helpButtonEnabled { 
                 display: none; 
             }
+            /*
+            header.sidebarHeader {
+                justify-content: flex-end;
+            }
+            embeddedservice-chat-header {
+                background-color: #FFFFFF !important;
+            }
+            embeddedservice-chat-header h2, embeddedservice-chat-header button.minimizeButton {
+                display: none;
+            }
+            embeddedservice-chat-header button.closeButton {
+                background-color: #000000;
+            }
+            */
             /* スマホ表示のモーダル背景と影を削除（ダイアログ表示にさせない） */
             @media screen and (max-width:768px) {
                 .sidebarMaximized.embeddedServiceSidebar {
@@ -41,34 +90,57 @@
         </style>
     
         <!-- チャット小窓のスニペット -->
+        <style type='text/css'>
+            .embeddedServiceHelpButton .helpButton .uiButton {
+                background-color: #005290;
+                font-family: "Arial", sans-serif;
+            }
+            .embeddedServiceHelpButton .helpButton .uiButton:focus {
+                outline: 1px solid #005290;
+            }
+        </style>
+
         <script type='text/javascript' src='https://service.force.com/embeddedservice/5.0/esw.min.js'></script>
         <script type='text/javascript'>
             var initESW = function(gslbBaseURL) {
                 embedded_svc.settings.displayHelpButton = true; //または false
                 embedded_svc.settings.language = ''; //たとえば、「en」または「en-US」を入力します
-                
-                embedded_svc.settings.defaultMinimizedText = '問い合わせを開始する'; //(エキスパートとチャットにデフォルト設定)
-        
+
+                //embedded_svc.settings.defaultMinimizedText = '...'; //(エキスパートとチャットにデフォルト設定)
+                //embedded_svc.settings.disabledMinimizedText = '...'; //(エージェントがオフラインにデフォルト設定)
+
+                //embedded_svc.settings.loadingText = ''; //(読み込み中にデフォルト設定)
+                //embedded_svc.settings.storageDomain = 'yourdomain.com'; //(リリースのドメインを設定して、訪問者がチャットセッション中にサブドメインを移動できるようにします)
+
+                // チャット の設定
+                //embedded_svc.settings.directToButtonRouting = function(prechatFormData) {
+                    // Dynamically changes the button ID based on what the visitor enters in the pre-chat form.
+                    // Returns a valid button ID.
+                //};
+                //embedded_svc.settings.prepopulatedPrechatFields = {}; //事前チャットフォームの項目の自動入力を設定
+                //embedded_svc.settings.fallbackRouting = []; //ボタン ID、ユーザ ID、または userId_buttonId の配列
+                //embedded_svc.settings.offlineSupportMinimizedText = '...'; //(デフォルトは [お問い合わせ])
+
                 embedded_svc.settings.enabledFeatures = ['LiveAgent'];
                 embedded_svc.settings.entryFeature = 'LiveAgent';
-        
+
                 embedded_svc.init(
                     'https://dp0000000a24weas--sandbp2.sandbox.my.salesforce.com',
                     'https://dp0000000a24weas--sandbp2.sandbox.my.site.com/',
                     gslbBaseURL,
                     '00Dp0000000A24W',
-                    'EinsteinBot',
+                    'Test_Shamaison',
                     {
                         baseLiveAgentContentURL: 'https://c.la1-c1cs-ukb.salesforceliveagent.com/content',
                         deploymentId: '572p00000004CZp',
-                        buttonId: '573p00000004Cfz',
+                        buttonId: '573p000000000Tl',
                         baseLiveAgentURL: 'https://d.la1-c1cs-ukb.salesforceliveagent.com/chat',
-                        eswLiveAgentDevName: 'EmbeddedServiceLiveAgent_Parent04Ip00000004CQxEAM_17f0bffddd5',
+                        eswLiveAgentDevName: 'EmbeddedServiceLiveAgent_Parent04Ip00000008OcUEAU_1841d21181d',
                         isOfflineSupportEnabled: false
                     }
                 );
             };
-        
+
             if (!window.embedded_svc) {
                 var s = document.createElement('script');
                 s.setAttribute('src', 'https://dp0000000a24weas--sandbp2.sandbox.my.salesforce.com/embeddedservice/5.0/esw.min.js');
@@ -110,12 +182,22 @@
             }];
         </script>
 
+<!-- <input type="button" value="button" onclick="buttonClick()" class="custom_button"> -->
+
         <script>
         /**
          * ページ遷移時に自動でボットを起動する
          */
         window.onload = function(){
+            //$('.helpButtonEnabled').trigger("click");
+            //location.href = 'menu.html';
             embedded_svc.onHelpButtonClick();
+            // alert('Click');
+        //    const chatHandler = function() {
+        //      if (typeof window.embedded_svc !== 'undefined') {
+        //        window.embedded_svc.onHelpButtonClick();
+        //      }
+        //    };
             const els = document.getElementsByClassName('chat-button');
             Array.prototype.forEach.call(els, function(el) {
               el.addEventListener('click', chatHandler);
@@ -123,24 +205,52 @@
         }
 
         </script>
+        
+        <!--
+        <script>
+            embedded_svc.addEventHandler("onChatEndedByChasitor", function(data) {
+                //console.log("onChatEndedByChasitor event was fired.  liveAgentSessionKey was " + data.liveAgentSessionKey);
+                //alert('Test');
+                location.href = 'index.html';
+
+            });
+        </script>
+        -->
 
         <script>
         /**
          * 組み込みチャット終了後、別のページへ遷移する
          */
             embedded_svc.addEventHandler("afterDestroy", function(data) {
+                //console.log("onChatEndedByChasitor event was fired.  liveAgentSessionKey was " + data.liveAgentSessionKey);
+                //alert('Test');
                 location.href = 'index.html';
 
             });
         </script>
 
         <script>
+            function closeButtonClick(){
+                //embedded_svc.ChatEnded();
+                //const els = document.getElementsByClassName('chat-button');
+                //Array.prototype.forEach.call(els, function(el) {
+                //    el.addEventListener('click', chatHandler);
+                //});
+                //embedded_svc.liveAgentAPI.clearSession();
+                embedded_svc.liveAgentAPI.endChat();
+            }
+        </script>
+
+        <script>
         /**
          * ブラウザを閉じる後、チャットを強制終了させる
          */
-            //window.addEventListener('beforeunload', event => {
-                //embedded_svc.liveAgentAPI.endChat();
-            //});
+            window.addEventListener('beforeunload', event => {
+                embedded_svc.liveAgentAPI.endChat();
+            });
         </script>
+
+ <!-- <h1 class="title_text">問い合わせを開始しますか？</h1> -->
+    <!-- <div>ID=1001</div> --> 
     </body>
 </html>
