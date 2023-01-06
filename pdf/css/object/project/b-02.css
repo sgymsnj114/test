@@ -1,0 +1,23 @@
+.l-subscriberInformation__link {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.l-subscriberInformation__item {
+  width: 23%;
+}
+
+.l-subscriberInformation__item a {
+  text-decoration: none;
+  text-align: center;
+}
+
+.l-subscriberInformation__item a img {
+  width: 70%;
+}
+
+.l-subscriberInformation__item a p {
+  font-size: 11px;
+  letter-spacing: normal;
+}

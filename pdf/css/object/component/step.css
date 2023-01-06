@@ -1,0 +1,47 @@
+.l-step {
+  margin-bottom: 27px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.l-step__number {
+  font-family: din-2014, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  color: #D11F2E;
+  font-size: 14px;
+}
+
+.l-step__number--large {
+  font-size: 20px;
+}
+
+.l-step__title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 30px;
+  letter-spacing: 0.06em;
+}
+
+.step-circle {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  border: 6px solid #DFDFDE;
+  position: relative;
+}
+
+.step-circle-completion {
+  display: block;
+  position: absolute;
+  bottom: 9px;
+  left: 9px;
+  width: 35px;
+  height: 35px;
+  border-width: 9px 9px 0 0;
+  border-color: #D11F2E;
+  border-style: solid;
+  -moz-border-radius: 0 44px 0 0;
+  -webkit-border-radius: 0 44px 0 0;
+  border-radius: 0 44px 0 0;
+}

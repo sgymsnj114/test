@@ -1,0 +1,391 @@
+html {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+a {
+  display: inline-block;
+  color: #3478F6;
+  text-decoration: underline;
+}
+
+p {
+  font-size: 14px;
+  color: #333333;
+  line-height: 23.8px;
+  letter-spacing: 0.06em;
+}
+
+.l-pageList dt{
+  background-color: #333333;
+  color: #ffffff;
+  padding: 10px;
+}
+
+.l-pageList dd {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #333333;
+}
+
+.l-button-wrapper {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.l-button {
+  display: inline-block;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background-color: #CC2934;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  border-radius: 50px;
+  padding: 13px 0;
+  width: 238px;
+}
+
+form {
+  margin-top: 33px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 12px;
+  letter-spacing: 0.06em;
+  margin-bottom: 11px;
+}
+
+input.email,
+input.tel,
+input.password,
+input.name,
+input.authCode,
+input.telAuthCode {
+  width: 100%;
+  border: 1px solid #CCCCCC;
+  border-radius: 4px;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
+
+input.email.is-error,
+.checkboxInput:has(.is-error),
+input.tel.is-error,
+input.name.is-error,
+.year.is-error,
+.month.is-error,
+.day.is-error {
+  border: 1px solid #CC2934;
+  background-color: #FDF0F1;
+}
+
+
+.is-error-email,
+.is-error-privacyPolicy,
+.is-error-tel,
+.is-error-password,
+.is-error-repassword,
+.is-error-familyName,
+.is-error-givenName,
+.is-error-year,
+.is-error-month,
+.is-error-day,
+.is-error-emailInvitation,
+.is-error-telInvitation {
+  color: #D11F2E;
+  font-size: 12px;
+}
+
+#email-error::before,
+#privacyPolicy-error::before,
+#authcode-error::before,
+#tel-error::before,
+#telAuthCode-error::before,
+#password-error::before,
+#repassword-error::before,
+#familyName-error::before,
+#givenName-error::before,
+#year-error::before,
+#month-error::before,
+#day-error::before,
+#emailInvitation-error::before,
+#telInvitation-error::before {
+  font-family: FontAwesome;
+  content: "\f06a";
+  margin-right: 6px;
+}
+
+.password-entering {
+  position: relative;
+}
+
+.password-re-entering {
+  position: relative;
+}
+
+.field-icon {
+  position: absolute;
+  top: 68%;
+  transform: translate(0,-68%);
+  right: 2.6666vw;
+}
+
+.field-re-entering-icon {
+  position: absolute;
+  top: 68%;
+  transform: translate(0,-68%);
+  right: 2.6666vw;
+}
+
+
+
+
+select {
+  width: 100%;
+  border: 1px solid #CCCCCC;
+  border-radius: 4px;
+  padding: 10px;
+  position: relative;
+}
+
+.l-form__birthDate {
+  position: relative;
+}
+
+.l-form__birthDate::after {
+  content: "\025bc";
+  display: inline-block;
+  font-size: 10px;
+  position: absolute;
+  top: 50%;
+  right: 2.6666vw;
+  transform: translate(0, -50%);
+}
+
+
+select.year {
+  width: 24.5333vw;
+}
+
+select.month,
+select.day {
+  width: 19.7333vw;
+}
+
+input::placeholder {
+  color: #B2B2B2;
+}
+
+.checkboxInput {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.ECM_CheckboxInput-Input {
+  margin: 0;
+  width: 0;
+  opacity: 0;
+}
+
+.checkboxInput-Input:checked+.checkboxInput-DummyInput::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 30%;
+  left: 60%;
+  width: 40%;
+  height: 3px;
+  border-radius: 2px;
+  transform: translate(-6px, 5px) rotateZ(-135deg);
+  transform-origin: 2px 2px;
+  background: #D11F2E;
+}
+
+.checkboxInput-Input:checked+.checkboxInput-DummyInput::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 30%;
+  left: 60%;
+  width: 76%;
+  height: 3px;
+  border-radius: 2px;
+  transform: translate(-6px, 5px) rotateZ(-45deg);
+  transform-origin: 4px 1px;
+  background: #D11F2E;
+}
+
+.checkboxInput-DummyInput {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 22px;
+  height: 22px;
+  border: solid 1px #AAAAAA;
+  border-radius: 4px;
+}
+
+.checkboxInput-LabelText {
+  margin-left: 8px;
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.l-form__nameWrapper {
+  display: flex;
+  gap: 5.3333vw;
+}
+
+.l-form__birthDateWrapper {
+  display: flex;
+  gap: 2.6666vw;
+  margin-bottom: 8px;
+}
+
+.l-form__birthDateFlex {
+  display: flex;
+  align-items: center;
+  gap: 2.6666vw;
+}
+
+.l-form__birthDateFlex label {
+  margin-bottom: 0;
+}
+
+.percent {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+svg {
+  width: 80px;
+  height: 80px;
+}
+
+svg circle {
+  position: relative;
+  fill: none;
+  stroke-width: 6;
+  stroke: #f3f3f3;
+  stroke-dasharray: 0;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+}
+
+/* 
+stroke-dashoffset 計算方法
+stroke-dashoffset: calc(207 - (207 * x) / 100);
+ */
+
+
+svg circle.line.pct20 {
+  stroke-dashoffset: 166;
+  stroke: #CC2934;
+}
+
+svg circle.line.pct40 {
+  stroke-dashoffset: 145;
+  stroke: #CC2934;
+}
+
+svg circle.line.pct60 {
+  stroke-dashoffset: 100;
+  stroke: #CC2934;
+}
+
+svg circle.line.pct70 {
+  stroke-dashoffset: 63;
+  stroke: #CC2934;
+}
+
+svg circle.line.pct90 {
+  stroke-dashoffset: 20;
+  stroke: #CC2934;
+}
+
+.percent svg {
+  transform: rotate(-90deg);
+}
+
+.line {
+  animation: circleAnim 1s forwards;
+}
+
+.number__inner {
+  position: relative;
+  width: 33px;
+  height: 36px;
+  font-weight: 600;
+}
+
+.number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.number span {
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  line-height: 1;
+}
+
+.number .molecule {
+  font-size: 25px;
+  color: #D11F2E;
+  display: inline-block;
+  position: absolute;
+  top: -5%;
+  left: -5%;
+}
+
+.number .slash {
+  display: inline-block;
+  width: 39px;
+  height: 1px;
+  background-color: #333333;
+  border-radius: 2px;
+  transform: rotate(-60deg);
+  position: absolute;
+  top: 60%;
+  right: 0%;
+}
+
+.number .denominator {
+  font-size: 18px;
+  display: inline-block;
+  position: absolute;
+  right: 15%;
+  bottom: -10%;
+}
+
+@keyframes circleAnim {
+  0% {
+    stroke-dasharray: 0 207;
+  }
+
+  99.9%,
+  to {
+    stroke-dasharray: 207 207;
+  }
+}
+
+
+.checkboxInput {
+  padding: 10px;
+  border: 1px solid #B2B2B2;
+  border-radius: 4px;
+}
+
+.checkboxInput-LabelText {
+  font-size: 16px;
+  margin-left: 20px;
+}
