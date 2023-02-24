@@ -20,7 +20,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         document.write('<meta property="og:type" content="ページの種類js" />');
         document.write('<meta property="og:description" content="ページの説明js" />');
         document.write('<meta property="og:title" content="ページのタイトルjs" />');
-        document.write('<meta property="og:url" content="https://sgymsnj114.github.io/test/gtm/ogp2.html" />');
+        document.write('<meta property="og:url" content="https://sgymsnj114.github.io/test/gtm/ogp.html" />');
 //        document.write('<meta property="og:image" content="' + image + '" />');
         document.write('<meta property="og:site_name" content="サイト名js" />');
         document.write('<meta property="og:locale" content="ja_JP" />');
@@ -38,6 +38,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <h1>OGP TEST PAGE2</h1>
 headにjavascriptで追加
 <script>
+function ogp_setting() {
+        var title = '[追加テスト]' + document.title;
+        var url = location.href;
+        var image = 'https://cly7796.net/blog/sample/rewrite-ogp-with-javascript/02/img1.jpg';
+ 
+        document.title = title;
+        var metaData = [
+            {
+                'property': 'og:type',
+                'content': 'ページの種類js2'
+            }, {
+                'property': 'og:description',
+                'content': 'ページの説明js2'
+            }, {
+                'property': 'og:title',
+                'content': 'ページの説明js2'
+            }, {
+                'property': 'og:url',
+                'content': 'https://sgymsnj114.github.io/test/gtm/ogp3.html'
+//            }, {
+//                'property': 'og:image',
+//                'content': image
+            }, {
+                'property': 'og:site_name',
+                'content': 'サイト名js2'
+            }, {
+                'property': 'og:locale',
+                'content': 'ja_JP'
+            }
+        ]
+        for (var i = 0; i < metaData.length; i++) {
+            var meta = document.createElement('meta');
+            for (var prop in metaData[i]) {
+                meta.setAttribute(prop, metaData[i][prop]);
+            }
+            document.head.appendChild(meta);
+        }
+}
+ogp_setting();
 </script>
 </body>
 </html>
