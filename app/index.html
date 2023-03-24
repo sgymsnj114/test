@@ -10,9 +10,10 @@
 </head>
 <body>
 <h1>APP TEST INDEX</h1>
-<button onclick="closeView.postMessage();">closeView(wighout parameter)</button><br>
+<button onclick="closeView.postMessage();">closeView(パラメーターなし)</button><br>
 <button onclick="closeView.postMessage('');">closeView</button><br>
 <button onclick="externalView.postMessage('https://www.google.co.jp');">externalView</button><br>
+<button onclick="externalView.postMessage('abcd');">externalView(遷移できないURL)</button><br>
 <br>
 <a href="https://tci-resident-app-test-bucket.s3.ap-northeast-1.amazonaws.com/deeplink.html">Deep Link Test(to AWS SITE)</a><br>
 <br>
