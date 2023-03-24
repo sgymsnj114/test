@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<title>GET TEST INDEX</title>
+</head>
+<body>
+<h1>GET TEST INDEX</h1>
+get<br>
+<br>
+<a href="get.html" id="a1">get.html</a>
+<br>
+<script>
+var params = (new URL(document.location)).searchParams;
+var year = params.get('year');
+console.log(year);
+var url = 'get.html';
+if (year) {
+    url = 'get.html?year=' + year;
+}
+console.log(url);
+var a1 = document.getElementById('a1');
+console.log(a1);
+a1.textContent = url;
+a1.setAttribute('href', url);
+</script>
+</body>
+</html>
