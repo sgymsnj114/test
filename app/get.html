@@ -10,10 +10,14 @@
 </head>
 <body>
 <h1>GET TEST INDEX</h1>
-get<br>
 <br>
-<a href="get.html" id="a1">get.html</a>
+リクエストされたURL<br>
+<a href="get.html" id="a1">get.html</a><br>
 <br>
+リンク先<br>
+<a href="get.html">get.html</a><br>
+<a href="get.html?year=2022">get.html?year=2022</a><br>
+<a href="get.html?year=2023">get.html?year=2023</a><br>
 <script>
 var params = (new URL(document.location)).searchParams;
 var year = params.get('year');
