@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>商品名取得の確認ツール</title>
+<style>
+  body { font-family: sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; line-height: 1.6; }
+  h1 { font-size: 1.3rem; }
+  h2 { font-size: 1.1rem; margin-top: 2rem; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  label { display: block; margin-top: 12px; font-weight: bold; }
+  input[type="text"], input[type="url"] { width: 100%; padding: 8px; box-sizing: border-box; margin-top: 4px; }
+  button { margin-top: 12px; margin-right: 8px; padding: 8px 16px; cursor: pointer; }
+  .note { background: #fff8e1; border: 1px solid #ffe082; padding: 10px 14px; border-radius: 4px; font-size: 0.9rem; margin-top: 12px; }
+  .result-url { background: #f5f5f5; padding: 8px; border-radius: 4px; word-break: break-all; font-size: 0.85rem; margin-top: 8px; }
+  #preview { max-width: 100%; max-height: 300px; margin-top: 12px; display: none; }
+</style>
+</head>
+<body>
+  <h1>商品名取得の簡易確認ツール</h1>
+  <p class="note">
+    ・有償サービスやAPIなどを利用しない範囲で画像による「商品名」の取得を実現するための簡易確認ツールです<br>
+    ・本ツールは検証・確認用途としており、検索結果や動作を保証するものではありません。<br>
+  </p>
+
+  <h2>案①旧Google画像検索機能で画像検索（Googleの旧エンドポイントを呼出）</h2>
+  <p class="note">
+    <strong>説明</strong><br>
+    この機能はGoogleの現在のGoogle Lensではなく、従来のGoogle画像検索機能を利用しています。<br>
+    こちらはファイルの中身をブラウザから直接Googleへ送信する方式です。<br>
+    自サイトや第三者サーバーに画像を公開URLとして配置する必要はありません。<br>
+    <br><strong>注意事項</strong><br>
+    ・Googleの旧画像検索アップロード機能を利用しています。<br>
+    ・現在のGoogle Lensとは異なる仕組みのため、検索結果や画面表示が異なる場合があります。<br>
+    ・キーワードの同時送信機能はGoogleの公式仕様として公開されておらず、動作を保証できません。<br>
+    ・※ キーワード欄は動作未確認です。「encoded_image」以外に画像と同時にテキストクエリを渡せるフィールド名が公式に文書化されておらず、ここでは候補として <code>q</code> という名前で送信します。反映されるかどうか実際に試してご確認ください。<br>
+    ・画像データはブラウザからGoogleへ直接送信されます。<br>
+    ・Googleの仕様変更により、検索結果や画面構成は変わる場合があります。<br>
+    ・Googleの仕様変更により、将来的に利用できなくなる可能性があります。<br>
+  </p>
+  <form action="https://www.google.com/searchbyimage/upload" method="POST" enctype="multipart/form-data" target="_blank">
+    <label for="directFile">アップロードする画像ファイル</label>
+    <input type="file" id="directFile" name="encoded_image" accept="image/*" required>
+    <label for="directKeyword">キーワード（任意）※実際は裏側でキーワード指定するイメージ</label>
+    <input type="text" id="directKeyword" name="q" placeholder="例: 商品名">
+    <button type="submit">この画像を直接Googleへ送って解析</button>
+  </form>
+  
+  <h2>案②Google Lensで画像検索（Google Lensのリンクを配置）</h2>
+  <p class="note">
+    <strong>説明</strong><br>
+    ・Googleが提供する画像検索サービス「Google Lens」のページを新しいタブで開きます。<br>
+    ・Google Lensでは画像をアップロードすることで、商品名・類似画像・関連情報などを検索できます。<br>
+    ・この方式は画像データを自サイトから送信せず、ユーザーがGoogle Lens上で直接画像をアップロードして検索を行います。<br>
+    <br><strong>注意事項</strong><br>
+    ・画像は自動で引き継がれません。<br>
+    ・Google Lensの画面でユーザー自身が画像をアップロードしてください。<br>
+    ・Googleの仕様変更により、検索結果や画面構成は変わる場合があります。<br>
+    ・Googleの仕様変更により、将来的に利用できなくなる可能性があります。<br>
+  </p>
+  <button onclick="window.open('https://lens.google.com/', '_blank')">画像を検索する</button>
+</body>
+</html>

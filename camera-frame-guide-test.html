@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>カメラ枠ガイド 動作検証ツール</title>
+<style>
+  body { font-family: sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; line-height: 1.6; }
+  h1 { font-size: 1.3rem; }
+  h2 { font-size: 1.1rem; margin-top: 2rem; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  button { margin-top: 12px; margin-right: 8px; padding: 8px 16px; cursor: pointer; }
+  .note { background: #fff8e1; border: 1px solid #ffe082; padding: 10px 14px; border-radius: 4px; font-size: 0.9rem; margin-top: 12px; }
+  .status { font-size: 0.85rem; margin-top: 8px; }
+  .status.ok { color: #2e7d32; }
+  .status.ng { color: #c62828; }
+  .error-box { background: #ffebee; border: 1px solid #ef9a9a; padding: 8px 12px; border-radius: 4px; font-size: 0.85rem; margin-top: 8px; display: none; white-space: pre-wrap; }
+
+  /* カメラプレビュー＋枠ガイド */
+  .camera-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 3 / 4;
+    background: #000;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-top: 12px;
+  }
+  .camera-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* box-shadowの外側スプレッドで枠の外だけを暗くする定番手法 */
+  .frame-guide {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 62%;
+    aspect-ratio: 1 / 1;
+    border: 3px solid #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+    pointer-events: none;
+  }
+  .camera-hint {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #fff;
+    font-size: 0.8rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    pointer-events: none;
+  }
+
+  #capturedCanvas { max-width: 100%; border: 1px solid #ccc; margin-top: 12px; display: none; }
+</style>
+</head>
+<body>
+  <h1>カメラ枠ガイド 動作検証ツール</h1>
+
+  <p class="note">
+    <code>getUserMedia()</code> でカメラのライブ映像を表示し、CSSで四角い枠（撮影ガイド）を重ねる方式の動作確認用ツールです。<br>
+    「撮影」を押すと、枠内に写っている範囲だけを切り出してCanvasに描画します。<br>
+    詳細は <a href="./camera-frame-guide-investigation.md">camera-frame-guide-investigation.md</a> を参照してください。
+  </p>
+
+  <h2>0. 実行環境の確認</h2>
+  <div id="secureContextStatus" class="status">確認中...</div>
+  <div id="apiSupportStatus" class="status">確認中...</div>
+
+  <h2>1. カメラ起動</h2>
+  <button id="btnStart">カメラを起動</button>
+  <button id="btnSwitch" disabled>前面/背面 切り替え</button>
+  <button id="btnStop" disabled>停止</button>
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="camera-wrapper" id="cameraWrapper" style="display:none;">
+    <video id="preview" autoplay playsinline muted></video>
+    <div class="frame-guide"></div>
+    <div class="camera-hint">枠内に商品が収まるように撮影してください</div>
+  </div>
+
+  <h2>2. 撮影・切り出し結果</h2>
+  <button id="btnCapture" disabled>撮影（枠内をクロップ）</button>
+  <canvas id="capturedCanvas"></canvas>
+
+  <script>
+    const secureContextStatusEl = document.getElementById('secureContextStatus');
+    const apiSupportStatusEl = document.getElementById('apiSupportStatus');
+    const btnStart = document.getElementById('btnStart');
+    const btnSwitch = document.getElementById('btnSwitch');
+    const btnStop = document.getElementById('btnStop');
+    const btnCapture = document.getElementById('btnCapture');
+    const errorBox = document.getElementById('errorBox');
+    const cameraWrapper = document.getElementById('cameraWrapper');
+    const video = document.getElementById('preview');
+    const canvas = document.getElementById('capturedCanvas');
+    const frameGuide = document.querySelector('.frame-guide');
+
+    let currentStream = null;
+    let facingMode = 'environment'; // 背面カメラを優先
+
+    // 0. 実行環境の確認（セキュアコンテキスト・API対応状況）
+    if (window.isSecureContext) {
+      secureContextStatusEl.textContent = '✅ セキュアコンテキストです（getUserMedia利用可）';
+      secureContextStatusEl.className = 'status ok';
+    } else {
+      secureContextStatusEl.textContent = '❌ セキュアコンテキストではありません（HTTPS または localhost でアクセスしてください）';
+      secureContextStatusEl.className = 'status ng';
+    }
+
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      apiSupportStatusEl.textContent = '✅ このブラウザは getUserMedia() に対応しています';
+      apiSupportStatusEl.className = 'status ok';
+    } else {
+      apiSupportStatusEl.textContent = '❌ このブラウザは getUserMedia() に対応していません';
+      apiSupportStatusEl.className = 'status ng';
+      btnStart.disabled = true;
+    }
+
+    function showError(err) {
+      errorBox.style.display = 'block';
+      errorBox.textContent = `${err.name || 'Error'}: ${err.message || err}`;
+    }
+
+    function clearError() {
+      errorBox.style.display = 'none';
+      errorBox.textContent = '';
+    }
+
+    async function startCamera() {
+      clearError();
+      stopStream();
+      try {
+        currentStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: facingMode } },
+          audio: false,
+        });
+        video.srcObject = currentStream;
+        cameraWrapper.style.display = 'block';
+        btnSwitch.disabled = false;
+        btnStop.disabled = false;
+        btnCapture.disabled = false;
+      } catch (err) {
+        showError(err);
+      }
+    }
+
+    function stopStream() {
+      if (currentStream) {
+        currentStream.getTracks().forEach((track) => track.stop());
+        currentStream = null;
+      }
+    }
+
+    function stopCamera() {
+      stopStream();
+      video.srcObject = null;
+      cameraWrapper.style.display = 'none';
+      btnSwitch.disabled = true;
+      btnStop.disabled = true;
+      btnCapture.disabled = true;
+    }
+
+    btnStart.addEventListener('click', startCamera);
+    btnStop.addEventListener('click', stopCamera);
+    btnSwitch.addEventListener('click', () => {
+      facingMode = facingMode === 'environment' ? 'user' : 'environment';
+      startCamera();
+    });
+
+    // 枠ガイドの範囲を、object-fit:cover を考慮して映像の実ピクセル座標へ変換し、その範囲だけをCanvasへ切り出す
+    btnCapture.addEventListener('click', () => {
+      const containerRect = cameraWrapper.getBoundingClientRect();
+      const frameRect = frameGuide.getBoundingClientRect();
+
+      const videoW = video.videoWidth;
+      const videoH = video.videoHeight;
+      if (!videoW || !videoH) return;
+
+      const scale = Math.max(containerRect.width / videoW, containerRect.height / videoH);
+      const offsetX = (videoW * scale - containerRect.width) / 2;
+      const offsetY = (videoH * scale - containerRect.height) / 2;
+
+      // frameRect はビューポート基準のため、containerRect基準の相対座標に変換
+      const frameLeftInContainer = frameRect.left - containerRect.left;
+      const frameTopInContainer = frameRect.top - containerRect.top;
+
+      const sx = (frameLeftInContainer + offsetX) / scale;
+      const sy = (frameTopInContainer + offsetY) / scale;
+      const sSize = frameRect.width / scale;
+
+      const outputSize = 800; // 出力する正方形画像の一辺(px)
+      canvas.width = outputSize;
+      canvas.height = outputSize;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, sx, sy, sSize, sSize, 0, 0, outputSize, outputSize);
+      canvas.style.display = 'block';
+    });
+  </script>
+</body>
+</html>
