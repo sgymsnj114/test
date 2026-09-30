@@ -148,9 +148,10 @@
 
   <h2>1. 画像を選択</h2>
   <p class="note">
-    2通りの方式を比較検証できます。<br>
+    3通りの方式を比較検証できます。<br>
     <strong>A. 自作メニュー方式：</strong>「画像を選択」ボタン→自作の選択メニュー（カメラ起動/ライブラリ）を経由。<br>
-    <strong>B. 標準ボタン方式（test.htmlと同じ）：</strong><code>&lt;input type="file"&gt;</code>を直接タップ。iOSの標準アクションシート（撮る/ライブラリ/ファイルを選択）が直接出る。
+    <strong>B. 標準ボタン方式（test.htmlと同じ）：</strong><code>&lt;input type="file"&gt;</code>を直接タップ。iOSの標準アクションシート（撮る/ライブラリ/ファイルを選択）が直接出る。<br>
+    <strong>C. フレーム付きカメラ直接起動：</strong>自作メニューを介さず、<code>getUserMedia()</code>のカメラをボタン一発で直接起動。
   </p>
 
   <h3>A. 自作メニュー方式</h3>
@@ -159,6 +160,9 @@
 
   <h3>B. 標準ボタン方式（test.htmlと同じ）</h3>
   <input type="file" id="plainFileInput" accept="image/*">
+
+  <h3>C. フレーム付きカメラを直接起動</h3>
+  <button id="btnDirectCamera">📷 カメラを起動（メニューなし）</button>
 
   <div class="error-box" id="errorBox"></div>
 
@@ -195,6 +199,7 @@
     const btnMenuCancel = document.getElementById('btnMenuCancel');
     const libraryInput = document.getElementById('libraryInput');
     const plainFileInput = document.getElementById('plainFileInput');
+    const btnDirectCamera = document.getElementById('btnDirectCamera');
     const btnSwitch = document.getElementById('btnSwitch');
     const btnStop = document.getElementById('btnStop');
     const btnCapture = document.getElementById('btnCapture');
@@ -225,6 +230,7 @@
       apiSupportStatusEl.textContent = '❌ このブラウザは getUserMedia() に対応していません';
       apiSupportStatusEl.className = 'status ng';
       btnMenuCamera.disabled = true;
+      btnDirectCamera.disabled = true;
     }
 
     function showError(err) {
@@ -278,6 +284,11 @@
     plainFileInput.addEventListener('change', () => {
       const file = plainFileInput.files[0];
       if (file) drawFileToCanvas(file);
+    });
+
+    // C. メニューを介さず、ボタン一発でフレーム付きカメラを直接起動
+    btnDirectCamera.addEventListener('click', () => {
+      startCamera();
     });
 
     async function startCamera() {
