@@ -91,6 +91,31 @@
   }
   .shutter-btn:disabled, .icon-btn:disabled { opacity: 0.4; }
 
+  /* 画像選択ボタン押下時の選択メニュー（カメラ/ライブラリ） */
+  .pick-menu {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 2000;
+  }
+  .pick-menu-inner {
+    width: 100%;
+    max-width: 480px;
+    background: #fff;
+    padding: 16px calc(16px + env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .pick-menu-inner button { margin: 0; }
+  .pick-menu-cancel { background: #eee; }
+
+  #capturedCanvas { max-width: 100%; border: 1px solid #ccc; margin-top: 12px; display: none; }
+
   /* スマホ幅ではカメラ画面を画面いっぱいに表示する（フルスクリーン化） */
   @media (max-width: 640px) {
     .camera-wrapper {
@@ -106,8 +131,6 @@
       z-index: 1000;
     }
   }
-
-  #capturedCanvas { max-width: 100%; border: 1px solid #ccc; margin-top: 12px; display: none; }
 </style>
 </head>
 <body>
@@ -123,28 +146,55 @@
   <div id="secureContextStatus" class="status">確認中...</div>
   <div id="apiSupportStatus" class="status">確認中...</div>
 
-  <h2>1. カメラ起動</h2>
-  <button id="btnStart">カメラを起動</button>
+  <h2>1. 画像を選択</h2>
+  <p class="note">
+    2通りの方式を比較検証できます。<br>
+    <strong>A. 自作メニュー方式：</strong>「画像を選択」ボタン→自作の選択メニュー（カメラ起動/ライブラリ）を経由。<br>
+    <strong>B. 標準ボタン方式（test.htmlと同じ）：</strong><code>&lt;input type="file"&gt;</code>を直接タップ。iOSの標準アクションシート（撮る/ライブラリ/ファイルを選択）が直接出る。
+  </p>
+
+  <h3>A. 自作メニュー方式</h3>
+  <button id="btnPickImage">画像を選択</button>
+  <input type="file" id="libraryInput" accept="image/*" style="display:none;">
+
+  <h3>B. 標準ボタン方式（test.htmlと同じ）</h3>
+  <input type="file" id="plainFileInput" accept="image/*">
+
   <div class="error-box" id="errorBox"></div>
+
+  <!-- 「カメラを起動」か「ライブラリから選ぶ」を選べるメニュー（A方式用） -->
+  <div class="pick-menu" id="pickMenu">
+    <div class="pick-menu-inner">
+      <button id="btnMenuCamera">📷 カメラを起動</button>
+      <button id="btnMenuLibrary">🖼 ライブラリから選ぶ</button>
+      <button id="btnMenuCancel" class="pick-menu-cancel">キャンセル</button>
+    </div>
+  </div>
 
   <div class="camera-wrapper" id="cameraWrapper" style="display:none;">
     <video id="preview" autoplay playsinline muted></video>
-    <div class="frame-guide"></div>
-    <div class="camera-hint">枠内に商品が収まるように撮影してください</div>
-    <div class="camera-controls">
+    <div class="frame-guide" id="frameGuideEl"></div>
+    <div class="camera-hint" id="cameraHint">枠内に商品が収まるように撮影してください</div>
+    <div class="camera-controls" id="cameraControls">
       <button id="btnSwitch" class="icon-btn" title="前面/背面 切り替え">🔄</button>
       <button id="btnCapture" class="shutter-btn" title="撮影（枠内をクロップ）"></button>
       <button id="btnStop" class="icon-btn" title="閉じる">✕</button>
     </div>
   </div>
 
-  <h2>2. 撮影・切り出し結果</h2>
+  <h2>2. 選択・撮影結果</h2>
   <canvas id="capturedCanvas"></canvas>
 
   <script>
     const secureContextStatusEl = document.getElementById('secureContextStatus');
     const apiSupportStatusEl = document.getElementById('apiSupportStatus');
-    const btnStart = document.getElementById('btnStart');
+    const btnPickImage = document.getElementById('btnPickImage');
+    const pickMenu = document.getElementById('pickMenu');
+    const btnMenuCamera = document.getElementById('btnMenuCamera');
+    const btnMenuLibrary = document.getElementById('btnMenuLibrary');
+    const btnMenuCancel = document.getElementById('btnMenuCancel');
+    const libraryInput = document.getElementById('libraryInput');
+    const plainFileInput = document.getElementById('plainFileInput');
     const btnSwitch = document.getElementById('btnSwitch');
     const btnStop = document.getElementById('btnStop');
     const btnCapture = document.getElementById('btnCapture');
@@ -152,7 +202,9 @@
     const cameraWrapper = document.getElementById('cameraWrapper');
     const video = document.getElementById('preview');
     const canvas = document.getElementById('capturedCanvas');
-    const frameGuide = document.querySelector('.frame-guide');
+    const frameGuide = document.getElementById('frameGuideEl');
+    const cameraHint = document.getElementById('cameraHint');
+    const cameraControls = document.getElementById('cameraControls');
 
     let currentStream = null;
     let facingMode = 'environment'; // 背面カメラを優先
@@ -172,7 +224,7 @@
     } else {
       apiSupportStatusEl.textContent = '❌ このブラウザは getUserMedia() に対応していません';
       apiSupportStatusEl.className = 'status ng';
-      btnStart.disabled = true;
+      btnMenuCamera.disabled = true;
     }
 
     function showError(err) {
@@ -185,6 +237,49 @@
       errorBox.textContent = '';
     }
 
+    // 「画像を選択」ボタン→カメラ/ライブラリの選択メニュー
+    btnPickImage.addEventListener('click', () => {
+      pickMenu.style.display = 'flex';
+    });
+    btnMenuCancel.addEventListener('click', () => {
+      pickMenu.style.display = 'none';
+    });
+    pickMenu.addEventListener('click', (e) => {
+      if (e.target === pickMenu) pickMenu.style.display = 'none';
+    });
+    btnMenuCamera.addEventListener('click', () => {
+      pickMenu.style.display = 'none';
+      startCamera();
+    });
+    btnMenuLibrary.addEventListener('click', () => {
+      pickMenu.style.display = 'none';
+      libraryInput.click();
+    });
+
+    // ライブラリから選択した画像をカメラ撮影と同じCanvasへ描画（後からの選択で上書き）
+    function drawFileToCanvas(file) {
+      const img = new Image();
+      img.onload = () => {
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        canvas.style.display = 'block';
+        URL.revokeObjectURL(img.src);
+      };
+      img.src = URL.createObjectURL(file);
+    }
+
+    libraryInput.addEventListener('change', () => {
+      const file = libraryInput.files[0];
+      if (file) drawFileToCanvas(file);
+    });
+
+    // B. 標準ボタン方式（test.htmlと同じ、自作メニューを介さずにiOS標準シートが直接出る）
+    plainFileInput.addEventListener('change', () => {
+      const file = plainFileInput.files[0];
+      if (file) drawFileToCanvas(file);
+    });
+
     async function startCamera() {
       clearError();
       stopStream();
@@ -195,6 +290,7 @@
         });
         video.srcObject = currentStream;
         cameraWrapper.style.display = 'block';
+        showLiveView();
         btnSwitch.disabled = false;
         btnStop.disabled = false;
         btnCapture.disabled = false;
@@ -210,6 +306,14 @@
       }
     }
 
+    // ライブプレビュー表示に戻す（カメラ起動直後・前面/背面切り替え時に使用）
+    function showLiveView() {
+      video.style.display = 'block';
+      frameGuide.style.display = 'block';
+      cameraHint.style.display = 'block';
+      cameraControls.style.display = 'flex';
+    }
+
     function stopCamera() {
       stopStream();
       video.srcObject = null;
@@ -219,7 +323,6 @@
       btnCapture.disabled = true;
     }
 
-    btnStart.addEventListener('click', startCamera);
     btnStop.addEventListener('click', stopCamera);
     btnSwitch.addEventListener('click', () => {
       facingMode = facingMode === 'environment' ? 'user' : 'environment';
@@ -253,6 +356,9 @@
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, sx, sy, sSize, sSize, 0, 0, outputSize, outputSize);
       canvas.style.display = 'block';
+
+      // 撮影結果は上部の「2. 選択・撮影結果」に表示されるため、ここでは即座に前の画面へ戻す
+      stopCamera();
     });
   </script>
 </body>
