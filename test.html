@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Googleレンズ連携 動作検証ツール</title>
+<style>
+  body { font-family: sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; line-height: 1.6; }
+  h1 { font-size: 1.3rem; }
+  h2 { font-size: 1.1rem; margin-top: 2rem; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  label { display: block; margin-top: 12px; font-weight: bold; }
+  input[type="text"], input[type="url"] { width: 100%; padding: 8px; box-sizing: border-box; margin-top: 4px; }
+  button { margin-top: 12px; margin-right: 8px; padding: 8px 16px; cursor: pointer; }
+  .note { background: #fff8e1; border: 1px solid #ffe082; padding: 10px 14px; border-radius: 4px; font-size: 0.9rem; margin-top: 12px; }
+  .result-url { background: #f5f5f5; padding: 8px; border-radius: 4px; word-break: break-all; font-size: 0.85rem; margin-top: 8px; }
+  #preview { max-width: 100%; max-height: 300px; margin-top: 12px; display: none; }
+</style>
+</head>
+<body>
+  <h1>Googleレンズ連携 動作検証ツール</h1>
+
+  <p class="note">
+    このツールでは2種類の方式を検証できます。<br>
+    <strong>方式A（1〜3）:</strong> 画像の公開URLをGoogleへ渡す方式。Google側のサーバーが画像を取得しに行くため、認証なしでアクセスできる公開URLが必要です。<br>
+    <strong>方式B（4）:</strong> ローカルの画像ファイルをブラウザから直接Googleへ送信する方式。公開URLの用意は不要です。
+  </p>
+
+  <h2>1. ローカル画像プレビュー（任意・確認用）</h2>
+  <label for="fileInput">ローカル画像ファイルを選択（プレビューのみ・Googleには渡りません）</label>
+  <input type="file" id="fileInput" accept="image/*">
+  <img id="preview" alt="プレビュー">
+
+  <h2>2. 画像URL・キーワードの入力</h2>
+  <label for="imageUrl">画像の公開URL（必須）</label>
+  <input type="url" id="imageUrl" placeholder="https://your-site.com/uploads/sample.jpg">
+
+  <label for="keyword">キーワード（任意）</label>
+  <input type="text" id="keyword" placeholder="例: スニーカー">
+
+  <h2>3. 解析ページへ遷移（公開URL方式）</h2>
+  <button id="btnLens">Googleレンズで開く (uploadbyurl)</button>
+  <button id="btnImageSearch">Google画像検索で開く (searchbyimage)</button>
+
+  <div>
+    <div>生成されたURL（Googleレンズ）:</div>
+    <div class="result-url" id="urlLens">-</div>
+    <div style="margin-top:8px;">生成されたURL（Google画像検索）:</div>
+    <div class="result-url" id="urlImageSearch">-</div>
+  </div>
+
+  <h2>4. ローカル画像を直接アップロードして解析（公開URL不要）</h2>
+  <p class="note">
+    こちらはファイルの中身をブラウザから直接Googleへ送信する方式です。自サイトや第三者サーバーに画像を公開URLとして配置する必要はありません。
+    ただし送信先はGoogleの旧来の「画像でアップロード」用エンドポイントのため、Googleレンズと全く同じ結果画面になるとは限りません。<br>
+    <strong>※ キーワード欄は動作未確認です。</strong>「encoded_image」以外に画像と同時にテキストクエリを渡せるフィールド名が公式に文書化されておらず、
+    ここでは候補として <code>q</code> という名前で送信します。反映されるかどうか実際に試してご確認ください。
+  </p>
+  <form action="https://www.google.com/searchbyimage/upload" method="POST" enctype="multipart/form-data" target="_blank">
+    <label for="directFile">アップロードする画像ファイル</label>
+    <input type="file" id="directFile" name="encoded_image" accept="image/*" required>
+    <label for="directKeyword">キーワード（任意・動作未確認）</label>
+    <input type="text" id="directKeyword" name="q" placeholder="例: スニーカー">
+    <button type="submit">この画像を直接Googleへ送って解析</button>
+  </form>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    const imageUrlInput = document.getElementById('imageUrl');
+    const keywordInput = document.getElementById('keyword');
+    const urlLensEl = document.getElementById('urlLens');
+    const urlImageSearchEl = document.getElementById('urlImageSearch');
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+    });
+
+    function buildUrls() {
+      const imageUrl = imageUrlInput.value.trim();
+      const keyword = keywordInput.value.trim();
+
+      if (!imageUrl) {
+        alert('画像の公開URLを入力してください。');
+        return null;
+      }
+
+      const lensUrl = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageUrl)}`
+        + (keyword ? `&q=${encodeURIComponent(keyword)}` : '');
+
+      const imageSearchUrl = `https://www.google.com/searchbyimage?image_url=${encodeURIComponent(imageUrl)}`
+        + (keyword ? `&q=${encodeURIComponent(keyword)}` : '');
+
+      return { lensUrl, imageSearchUrl };
+    }
+
+    document.getElementById('btnLens').addEventListener('click', () => {
+      const urls = buildUrls();
+      if (!urls) return;
+      urlLensEl.textContent = urls.lensUrl;
+      window.open(urls.lensUrl, '_blank');
+    });
+
+    document.getElementById('btnImageSearch').addEventListener('click', () => {
+      const urls = buildUrls();
+      if (!urls) return;
+      urlImageSearchEl.textContent = urls.imageSearchUrl;
+      window.open(urls.imageSearchUrl, '_blank');
+    });
+  </script>
+</body>
+</html>
